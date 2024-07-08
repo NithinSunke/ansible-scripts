@@ -1,0 +1,17 @@
+---
+- name: Create ASM Disk Groups
+  hosts: asmdg
+  become: yes
+  become_user: oracle
+
+  tasks:
+    - name: Copy ASM Disk Groups script file
+      copy:
+        src: /u01/scripts/create_asm_diskgroup.sql
+        dest: /tmp/create_asm_diskgroup.sql
+        
+    - name: Create asm diskgroup
+      ansible.builtin.shell: |
+        source /home/oracle/scripts/setEnv.sh && \
+        source /home/oracle/scripts/grid_env && \
+        sqlplus "/ as sysasm" @/tmp/create_asm_diskgroup.sql

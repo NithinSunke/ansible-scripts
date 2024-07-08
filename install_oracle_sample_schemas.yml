@@ -1,0 +1,32 @@
+---
+- name: Install Oracle Sample Schemas
+  hosts: dg
+  become: yes
+  become_user: oracle
+
+  tasks:
+    - name: create directory to hold files
+      file:
+        path: /tmp/sampleschemas
+        state: directory
+
+    - name: Copy Sample Schema Files
+      copy:
+        src: /u01/soft/db-sample-schemas-12.2.0.1.zip
+        dest: /tmp/sampleschemas
+
+    - name: Unzip Sample Schema Files
+      ansible.builtin.unarchive:
+        src: /tmp/sampleschemas/db-sample-schemas-12.2.0.1.zip
+        dest: /tmp/sampleschemas
+        remote_src: yes
+
+    - name: Create tablespace sample_ts
+      ansible.builtin.shell: |
+        source /home/oracle/scripts/setEnv.sh && \
+        sqlplus "system/Nithin#123@pdb1" @ /tmp/sampleschemas/db-sample-schemas-12.2.0.1/create_tablespace.sql 
+  
+    - name:  Execute Sample Schema Installation
+      ansible.builtin.shell: |
+        source /home/oracle/scripts/setEnv.sh && \
+        sqlplus "system/Nithin#123@pdb1" @ /tmp/sampleschemas/db-sample-schemas-12.2.0.1/mksample.sql Nithin#123 Nithin#12 hr oe pm ix sh bi sample_ts temp /home/oracle pdb1

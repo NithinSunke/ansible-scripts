@@ -1,0 +1,47 @@
+---
+- name: Install Docker on OEL7
+  hosts: docker
+  become: yes 
+  tasks:
+    - name: Manage Yum Repositories using yum-config-manager
+      command: >
+        yum-config-manager --enable ol7_optional_latest &&
+        yum-config-manager --enable ol7_addons &&
+        yum-config-manager --enable ol7_developer &&
+
+    - name: Install required packages
+      get_url:
+        url: "https://github.com/docker/compose/releases/latest/download/docker-compose-{{ ansible_system | lower }}-{{ 'x86_64' if ansible_architecture == 'x86_64' else 'arm64' }}"
+        dest: /usr/local/bin/docker-compose
+        mode: 'ugo+x'
+
+    - name: Install required packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - yum-utils
+        - device-mapper-persistent-data
+        - lvm2
+        - oraclelinux-developer-release-el7
+
+    - name: Add Docker repository
+      yum_repository:
+        name: docker-ce
+        description: Docker CE Repository
+        baseurl: https://download.docker.com/linux/centos/7/$basearch/stable
+        gpgcheck: yes
+        gpgkey: https://download.docker.com/linux/centos/gpg
+        enabled: yes
+
+    - name: Install Docker
+      yum:
+        name: docker-ce
+        state: present
+      
+    - name: Start and enable Docker service
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+  
