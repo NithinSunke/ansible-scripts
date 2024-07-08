@@ -1,0 +1,56 @@
+---
+- name: Clone GitHub repository
+  hosts: orcl19c
+  tasks:
+   - name: install git
+     become: true
+     yum:
+       name: git
+       state: present
+     
+   - name: Remove directory if exists
+     file:
+       path: /tmp/scripts
+       state: absent
+
+   - name: Clone repository
+     git:
+       repo: https://github.com/NithinSunke/ansible-script.git  # Replace with your GitHub repository URL
+       dest: /tmp/scripts  # Destination directory on the target machine
+    
+   - name: Change permissions of the folder
+     file:
+       path: /tmp/scripts/orcl19c  # Path to the folder whose permissions you want to change
+       mode: "0777"  # Desired permissions mode for the folder
+       recurse: yes  # Apply the permissions recursively to all files and subdirectories
+    
+   - name: Preparing the host
+     become: true
+     shell: /tmp/scripts/orcl19c/prepare_host.sh
+
+   - name:  preparing disks 
+     become: true
+     shell: /tmp/scripts/orcl19c/prepare_disks.sh
+
+   - name:  install os packages for oracle database 
+     become: true
+     shell: /tmp/scripts/orcl19c/install_os_packages.sh
+
+   - name:  oracle user env setup 
+     become: true
+     become_user: oracle
+     shell: /tmp/scripts/orcl19c/oracle_user_environment_setup.sh
+
+   - name:  oracle database installation 
+     become: true
+     become_user: oracle
+     shell: /tmp/scripts/orcl19c/oracle_software_installation.sh
+
+   - name:  running root.sh script 
+     become: true
+     shell: /tmp/scripts/orcl19c/ora_root.sh
+
+   - name:  Creating database 
+     become: true
+     become_user: oracle
+     shell: /tmp/scripts/orcl19c/oracle_create_database.sh

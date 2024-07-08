@@ -1,0 +1,9 @@
+---
+- name: Update OEL7 server
+  hosts: oel7  # Replace with the target server(s) or server group(s)
+  become: yes  # Run tasks with root privileges
+  tasks:
+    - name: Update all packages
+      yum:
+        name: '*'
+        state: latest
