@@ -1,0 +1,12 @@
+---
+- name: Set kernel parameters
+  copy:
+    src: sysctl_oracle.conf
+    dest: /etc/sysctl.d/
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Apply sysctl parameters
+  command: /sbin/sysctl -p /etc/sysctl.d/sysctl_oracle.conf
+

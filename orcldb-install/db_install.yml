@@ -1,0 +1,12 @@
+---
+- name: Install Oracle Database
+  hosts: all
+  become: yes
+  vars_files:
+    - vars/main.yml
+  roles:
+#    - create_groups_users
+#    - create_directories
+#    - configure_system
+    - install_oracle
+

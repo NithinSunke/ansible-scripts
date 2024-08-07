@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Define variables
+ORACLE_BASE={{ oracle_base }}
+ORACLE_HOME={{ oracle_home }}
+ORACLE_INVENTORY={{ oracle_inventory }}
+ORACLE_USER=oracle
+ORACLE_GROUP=oinstall
+
+# Update and install required packages
+yum install -y oracle-database-preinstall-19c
+yum install -y zip unzip
+
+# Create necessary directories
+mkdir -p $ORACLE_BASE
+mkdir -p $ORACLE_HOME
+mkdir -p $ORACLE_INVENTORY
+
+# Set ownership of the directories
+chown -R $ORACLE_USER:$ORACLE_GROUP $ORACLE_BASE
+chown -R $ORACLE_USER:$ORACLE_GROUP $ORACLE_HOME
+chown -R $ORACLE_USER:$ORACLE_GROUP $ORACLE_INVENTORY
+
+
+
+# Run the Oracle installer
+sudo -u $ORACLE_USER bash -c "
+export CV_ASSUME_DISTID=OEL7.8
+$ORACLE_HOME/runInstaller -silent -responseFile /tmp/db_install_19c.rsp -ignorePrereq -waitForCompletion \
+ORACLE_HOME=$ORACLE_HOME \
+ORACLE_BASE=$ORACLE_BASE \
+INVENTORY_LOCATION=$ORACLE_INVENTORY \
+SELECTED_LANGUAGES=en \
+oracle.install.option=INSTALL_DB_SWONLY \
+UNIX_GROUP_NAME=$ORACLE_GROUP
+"
+
+# Run root scripts
+$ORACLE_INVENTORY/orainstRoot.sh
+$ORACLE_HOME/root.sh
+
+echo "Oracle Database 19c installation completed."
+

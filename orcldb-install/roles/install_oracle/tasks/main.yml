@@ -1,0 +1,13 @@
+---
+#- name: Unzip Oracle installation files
+#  unarchive:
+#    src: "/nfsshare/soft/orcldb/19c/{{ oracle_install_file }}"
+#    dest: "{{ oracle_home }}"
+#    remote_src: yes
+#  become_user: "{{ oracle_user }}"
+##  when: not directory_exists_result.stat.exists
+
+#- include_tasks: install_db.yml
+#- include_tasks: create_listener.yml
+- include_tasks: create_database.yml
+

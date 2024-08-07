@@ -1,0 +1,5 @@
+# defaults file for nfs_mount
+nfs_server: "192.168.1.10"
+nfs_share: "/nfsshare"
+mount_point: "/nfsshare"
+

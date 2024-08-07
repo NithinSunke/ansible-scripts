@@ -1,0 +1,82 @@
+echo "Creating CDB and PDB..."
+export ORACLE_BASE="{{ oracle_base }}"
+export ORACLE_HOME="{{ oracle_home }}"
+export PATH=$ORACLE_HOME/bin:$PATH
+
+
+$ORACLE_HOME/bin/dbca -silent -createDatabase \
+  -templateName General_Purpose.dbc \
+  -gdbName "{{ oracle_sid }}" \
+  -sid "{{ oracle_sid }}" \
+  -createAsContainerDatabase true \
+  -numberOfPDBs 1 \
+  -pdbName "{{ oracle_pdb }}" \
+  -pdbAdminPassword oracle \
+  -databaseConfigType SINGLE \
+  -responseFile NO_VALUE \
+  -characterSet AL32UTF8 \
+  -memoryMgmtType auto_sga \
+  -totalMemory 2048 \
+  -emConfiguration NONE \
+  -dbsnmpPassword oracle \
+  -sysPassword oracle \
+  -systemPassword oracle
+
+echo "Oracle Database 19c CDB and PDB creation completed."
+
+
+#!/bin/bash
+
+# Variables
+ORACLE_BASE="{{ oracle_base }}"
+ORACLE_HOME="{{ oracle_home }}"
+ORACLE_SID="{{ oracle_sid }}"
+PDB_NAME="{{ oracle_pdb }}"
+SYS_PASSWORD=Oracle_123
+PDB_PASSWORD=Oracle_123
+ORACLE_USER=oracle
+ORACLE_GROUP=oinstall
+DATA_DIR=oracle_datafiles
+DB_TEMPLATE=General_Purpose.dbc
+CHARACTER_SET=AL32UTF8
+
+
+# Set environment variables
+export ORACLE_BASE=$ORACLE_BASE
+export ORACLE_HOME=$ORACLE_HOME
+export ORACLE_SID=$ORACLE_SID
+export PATH=$ORACLE_HOME/bin:$PATH
+
+# Create database using DBCA
+#sudo -u $ORACLE_USER bash -c "
+export ORACLE_BASE=$ORACLE_BASE
+export ORACLE_HOME=$ORACLE_HOME
+export ORACLE_SID=$ORACLE_SID
+export PATH=$ORACLE_HOME/bin:$PATH
+
+dbca -silent -createDatabase \
+  -templateName $DB_TEMPLATE \
+  -gdbName $ORACLE_SID \
+  -sid $ORACLE_SID \
+  -responseFile NO_VALUE \
+  -characterSet $CHARACTER_SET \
+  -createAsContainerDatabase true \
+  -numberOfPDBs 1 \
+  -pdbName $PDB_NAME \
+  -pdbAdminPassword $PDB_PASSWORD \
+  -databaseConfigType SINGLE \
+  -automaticMemoryManagement false \
+  -totalMemory 2048 \
+  -emConfiguration NONE \
+  -datafileDestination '$DATA_DIR' \
+  -redoLogFileSize 50 \
+  -sysPassword $SYS_PASSWORD \
+  -systemPassword $SYS_PASSWORD \
+  -dbsnmpPassword $SYS_PASSWORD \
+  -asmSysPassword $SYS_PASSWORD \
+  -storageType FS \
+  -ignorePreReqs
+#"
+
+echo "Oracle Database 19c and PDB $PDB_NAME creation completed."
+

@@ -1,0 +1,29 @@
+---
+- name: Install Oracle prerequisites
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - oracle-database-preinstall-19c
+
+- name: Copy the  respones file
+  template:
+    src: db_install_19c.rsp.j2
+    dest: /tmp/db_install_19c.rsp
+    owner: oracle
+    group: oinstall
+    mode: '0644'
+
+- name: Copy the shell script db_install_19c.sh
+  template:
+    src: db_install_19c.sh.j2
+    dest: /tmp/db_install_19c.sh
+    owner: oracle
+    group: oinstall
+    mode: '0777'
+
+- name: Execute the install script
+  shell: /tmp/db_install_19c.sh
+  become: yes    
+
+
